@@ -1,0 +1,266 @@
+{
+    "info": {
+      "name": "Educational Content Assistant API",
+      "description": "Complete API collection for testing the Educational Content Assistant - an AI-powered lesson plan generator",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "_postman_id": "edu-assistant-001",
+      "version": "1.0.0"
+    },
+    "item": [
+      {
+        "name": "Health Check",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{base_url}}/health",
+            "host": ["{{base_url}}"],
+            "path": ["health"]
+          },
+          "description": "Check if the API is running"
+        },
+        "response": []
+      },
+      {
+        "name": "Documents",
+        "item": [
+          {
+            "name": "Upload Document",
+            "request": {
+              "method": "POST",
+              "header": [],
+              "body": {
+                "mode": "formdata",
+                "formdata": [
+                  {
+                    "key": "file",
+                    "type": "file",
+                    "src": "/path/to/your/document.pdf",
+                    "description": "Educational PDF document to upload"
+                  }
+                ]
+              },
+              "url": {
+                "raw": "{{base_url}}/api/v1/documents/upload",
+                "host": ["{{base_url}}"],
+                "path": ["api", "v1", "documents", "upload"]
+              },
+              "description": "Upload and process an educational PDF document"
+            },
+            "response": [
+              {
+                "name": "Success Response",
+                "originalRequest": {
+                  "method": "POST",
+                  "header": [],
+                  "url": {
+                    "raw": "{{base_url}}/api/v1/documents/upload",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "v1", "documents", "upload"]
+                  }
+                },
+                "status": "Created",
+                "code": 201,
+                "_postman_previewlanguage": "json",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": "{\n  \"document_id\": \"uuid-here\",\n  \"filename\": \"sample.pdf\",\n  \"num_chunks\": 150,\n  \"num_pages\": 42,\n  \"status\": \"completed\",\n  \"message\": \"Document successfully processed and indexed\"\n}"
+              }
+            ]
+          },
+          {
+            "name": "Get Index Stats",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/v1/documents/stats",
+                "host": ["{{base_url}}"],
+                "path": ["api", "v1", "documents", "stats"]
+              },
+              "description": "Get statistics about the vector database"
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Lessons",
+        "item": [
+          {
+            "name": "Generate Lesson Plan",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"topic\": \"Introduction to Photosynthesis\",\n  \"duration_minutes\": 60,\n  \"learner_profile\": {\n    \"age_group\": \"13-15\",\n    \"difficulty_level\": \"intermediate\",\n    \"prior_knowledge\": \"Basic biology concepts\",\n    \"learning_objectives\": [\n      \"Understand the process of photosynthesis\",\n      \"Identify key components involved\",\n      \"Explain the role of chlorophyll\"\n    ]\n  },\n  \"additional_context\": \"Focus on practical experiments and visual aids\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/v1/lessons/generate",
+                "host": ["{{base_url}}"],
+                "path": ["api", "v1", "lessons", "generate"]
+              },
+              "description": "Generate a personalized lesson plan using the AI agent"
+            },
+            "response": [
+              {
+                "name": "Success - Complete Lesson",
+                "originalRequest": {
+                  "method": "POST",
+                  "header": [],
+                  "url": {
+                    "raw": "{{base_url}}/api/v1/lessons/generate",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "v1", "lessons", "generate"]
+                  }
+                },
+                "status": "Created",
+                "code": 201,
+                "_postman_previewlanguage": "json",
+                "body": "{\n  \"lesson_id\": \"lesson-uuid\",\n  \"status\": \"completed\",\n  \"message\": \"Lesson plan generated successfully\",\n  \"lesson_plan\": {\n    \"lesson_id\": \"lesson-uuid\",\n    \"topic\": \"Introduction to Photosynthesis\",\n    \"difficulty_level\": \"intermediate\",\n    \"duration_minutes\": 60,\n    \"objectives\": [\n      \"Understand photosynthesis process\",\n      \"Identify key components\"\n    ],\n    \"prerequisites\": [\n      \"Basic biology knowledge\"\n    ],\n    \"content_outline\": [\n      {\n        \"title\": \"Introduction\",\n        \"content\": \"Overview of photosynthesis\",\n        \"duration_minutes\": 10\n      }\n    ],\n    \"activities\": [\n      \"Leaf observation experiment\"\n    ],\n    \"assessments\": [\n      \"Quiz on key concepts\"\n    ],\n    \"resources\": [\n      \"Microscope\",\n      \"Plant samples\"\n    ]\n  }\n}"
+              }
+            ]
+          },
+          {
+            "name": "Generate Lesson - PySpark Example",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"topic\": \"Introduction to PySpark\",\n  \"duration_minutes\": 60,\n  \"learner_profile\": {\n    \"age_group\": \"adults\",\n    \"difficulty_level\": \"intermediate\",\n    \"prior_knowledge\": \"Basic Python and data processing concepts\",\n    \"learning_objectives\": [\n      \"Understand PySpark vs Pandas differences\",\n      \"Create and manipulate DataFrames\",\n      \"Perform filtering and grouping operations\"\n    ]\n  },\n  \"additional_context\": \"Focus on practical DataFrame examples\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/v1/lessons/generate",
+                "host": ["{{base_url}}"],
+                "path": ["api", "v1", "lessons", "generate"]
+              },
+              "description": "Example: Generate lesson for PySpark with DataFrames"
+            },
+            "response": []
+          },
+          {
+            "name": "Get Lesson by ID",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/v1/lessons/{{lesson_id}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "v1", "lessons", "{{lesson_id}}"]
+              },
+              "description": "Retrieve a specific lesson plan by ID"
+            },
+            "response": []
+          },
+          {
+            "name": "List All Lessons",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/v1/lessons/?limit=10",
+                "host": ["{{base_url}}"],
+                "path": ["api", "v1", "lessons", ""],
+                "query": [
+                  {
+                    "key": "limit",
+                    "value": "10",
+                    "description": "Number of lessons to return"
+                  }
+                ]
+              },
+              "description": "List all generated lessons"
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Agent",
+        "item": [
+          {
+            "name": "Get Agent Status",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/v1/agent/status",
+                "host": ["{{base_url}}"],
+                "path": ["api", "v1", "agent", "status"]
+              },
+              "description": "Get current agent status and completed steps"
+            },
+            "response": [
+              {
+                "name": "Agent Status Response",
+                "originalRequest": {
+                  "method": "GET",
+                  "header": [],
+                  "url": {
+                    "raw": "{{base_url}}/api/v1/agent/status",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "v1", "agent", "status"]
+                  }
+                },
+                "status": "OK",
+                "code": 200,
+                "_postman_previewlanguage": "json",
+                "body": "{\n  \"agent_id\": \"agent-uuid\",\n  \"status\": \"ready\",\n  \"current_task\": null,\n  \"steps_completed\": [\n    \"Analyzed request\",\n    \"Searched knowledge base\",\n    \"Generated lesson structure\"\n  ],\n  \"last_updated\": \"2025-10-19T12:00:00\"\n}"
+              }
+            ]
+          },
+          {
+            "name": "Submit Feedback",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"lesson_id\": \"{{lesson_id}}\",\n  \"rating\": 5,\n  \"feedback_text\": \"Excellent lesson plan! Very comprehensive and well-structured.\",\n  \"helpful\": true\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/v1/agent/feedback",
+                "host": ["{{base_url}}"],
+                "path": ["api", "v1", "agent", "feedback"]
+              },
+              "description": "Submit feedback for a generated lesson"
+            },
+            "response": []
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "base_url",
+        "value": "http://localhost:8000",
+        "type": "string"
+      },
+      {
+        "key": "lesson_id",
+        "value": "",
+        "type": "string"
+      }
+    ]
+  }
