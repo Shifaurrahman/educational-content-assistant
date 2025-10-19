@@ -4,7 +4,8 @@ from app.models import (
     LessonGenerateResponse, 
     LessonPlan,
     AgentFeedback,
-    AgentFeedbackResponse
+    AgentFeedbackResponse,
+    EvaluationMetrics
 )
 from app.services.lesson_service import get_lesson_service
 from app.utils.logger import logger
