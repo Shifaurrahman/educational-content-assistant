@@ -53,6 +53,11 @@ Your task is to create high-quality, pedagogically sound lesson plans by:
 - Adjusting the difficulty level to match the learner profile
 - Providing practical activities and assessments
 
+**CRITICAL: Always cite your sources and reference the educational materials.**
+- When using information from the knowledge base, acknowledge it (e.g., "According to the source material...")
+- In the resources section, explicitly mention "Course materials from uploaded documents"
+- Reference specific concepts that came from the knowledge base
+
 Always think step-by-step and use your tools strategically. 
 
 When creating lesson plans, ensure they include:
@@ -197,16 +202,21 @@ Original Request:
 - Duration: {request.duration_minutes} minutes
 - Difficulty: {request.learner_profile.difficulty_level.value}
 
+IMPORTANT: Ensure the lesson plan references the source materials appropriately.
+- In content sections, use phrases like "Based on the course material..." or "According to the documentation..."
+- In the resources section, include "Educational documents and course materials"
+- Make it clear that content is derived from uploaded educational resources
+
 Please extract and format as JSON with these exact fields:
 {{
   "objectives": ["list of learning objectives"],
   "prerequisites": ["list of prerequisite knowledge/skills"],
   "content_outline": [
-    {{"title": "section name", "content": "section description", "duration_minutes": 15}}
+    {{"title": "section name", "content": "section description (reference sources where applicable)", "duration_minutes": 15}}
   ],
   "activities": ["list of activities"],
   "assessments": ["list of assessment methods"],
-  "resources": ["list of resources and materials"]
+  "resources": ["list of resources and materials - MUST include reference to uploaded course materials"]
 }}
 
 Ensure all lists have at least 3 items. Be specific and detailed.

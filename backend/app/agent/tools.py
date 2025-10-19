@@ -14,7 +14,7 @@ class KnowledgeBaseSearchTool:
     def __init__(self):
         self.embeddings = OpenAIEmbeddings(model=settings.OPENAI_EMBEDDING_MODEL)
         
-    def search(self, query: str, k: int = 5) -> str:
+    def search(self, query: str, k: int = 8) -> str:
         """Search the knowledge base for relevant content"""
         try:
             logger.info(f"Searching knowledge base for: {query}")
@@ -25,7 +25,7 @@ class KnowledgeBaseSearchTool:
                 self.embeddings
             )
             
-            # Retrieve relevant documents
+            # Retrieve relevant documents (increased from 5 to 8)
             docs = vectorstore.similarity_search(query, k=k)
             
             # Format results
@@ -52,6 +52,7 @@ class LessonPlanGeneratorTool:
             
             # Parse input if it's JSON
             if isinstance(input_str, str) and input_str.strip().startswith('{'):
+                import json
                 input_data = json.loads(input_str)
                 topic = input_data.get('topic', 'Unknown')
                 duration = int(input_data.get('duration', '60').replace(' minutes', ''))
@@ -117,6 +118,7 @@ class DifficultyAdjusterTool:
             
             # Parse input if it's JSON
             if isinstance(input_str, str) and input_str.strip().startswith('{'):
+                import json
                 input_data = json.loads(input_str)
                 content = input_data.get('content', '')
                 current_level = input_data.get('current_level', 'intermediate')
@@ -180,8 +182,11 @@ def create_agent_tools() -> List[Tool]:
             func=kb_search.search,
             description=(
                 "Search the knowledge base for relevant educational content. "
-                "Input should be a clear search query related to the lesson topic. "
-                "Returns relevant excerpts from uploaded educational materials."
+                "Input should be a detailed, specific search query related to the lesson topic. "
+                "Include key concepts, terms, and topics you want to find. "
+                "Example: 'PySpark DataFrames operations filtering grouping aggregation examples' "
+                "Returns relevant excerpts from uploaded educational materials. "
+                "USE THIS TOOL MULTIPLE TIMES with different queries to gather comprehensive information."
             )
         ),
         Tool(
