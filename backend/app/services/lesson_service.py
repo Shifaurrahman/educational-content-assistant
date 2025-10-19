@@ -2,6 +2,7 @@ from app.models import LessonPlan, LessonGenerateRequest
 from app.agent.agent import get_agent
 from app.config import get_settings
 from app.utils.logger import logger
+from app.utils.evaluation import get_evaluator
 from pathlib import Path
 import json
 from typing import Optional, Dict, Any
@@ -33,17 +34,35 @@ class LessonService:
             
             lesson_plan = result["lesson_plan"]
             
+            # Evaluate the lesson plan
+            evaluator = get_evaluator()
+            search_results = self._extract_search_results(result.get("intermediate_steps", []))
+            agent_steps = result.get("agent_steps", [])
+            
+            logger.info(f"Evaluating lesson with {len(search_results)} search results and {len(agent_steps)} agent steps")
+            
+            evaluation_metrics = evaluator.evaluate_lesson(
+                lesson_plan=lesson_plan.dict(),
+                search_results=search_results,
+                agent_steps=agent_steps
+            )
+            
+            # Add metrics to lesson metadata
+            if not isinstance(lesson_plan.metadata, dict):
+                lesson_plan.metadata = {}
+            lesson_plan.metadata["evaluation_metrics"] = evaluation_metrics
+            
             # Save lesson plan to disk
             self._save_lesson(lesson_plan)
             
-            logger.info(f"Successfully generated lesson {lesson_plan.lesson_id}")
+            logger.info(f"Successfully generated lesson {lesson_plan.lesson_id} with quality score: {evaluation_metrics.get('quality_score', 0):.2f}")
             
             return {
                 "lesson_id": lesson_plan.lesson_id,
                 "status": "completed",
                 "message": "Lesson plan generated successfully",
                 "lesson_plan": lesson_plan,
-                "agent_steps": result.get("agent_steps", [])
+                "evaluation_metrics": evaluation_metrics
             }
             
         except Exception as e:
@@ -52,8 +71,25 @@ class LessonService:
                 "lesson_id": str(uuid.uuid4()),
                 "status": "failed",
                 "message": f"Failed to generate lesson: {str(e)}",
-                "lesson_plan": None
+                "lesson_plan": None,
+                "evaluation_metrics": None
             }
+    
+    def _extract_search_results(self, intermediate_steps: list) -> list:
+        """Extract search results from agent's intermediate steps"""
+        search_results = []
+        try:
+            for step in intermediate_steps:
+                if isinstance(step, tuple) and len(step) >= 2:
+                    action, observation = step[0], step[1]
+                    # Check if this was a search tool call
+                    if hasattr(action, 'tool') and 'search' in action.tool.lower():
+                        search_results.append(str(observation))
+            logger.info(f"Extracted {len(search_results)} search results from intermediate steps")
+        except Exception as e:
+            logger.error(f"Error extracting search results: {e}")
+        
+        return search_results
     
     def get_lesson(self, lesson_id: str) -> Optional[LessonPlan]:
         """Retrieve a lesson plan by ID"""
@@ -110,7 +146,8 @@ class LessonService:
                         "lesson_id": lesson_data["lesson_id"],
                         "topic": lesson_data["topic"],
                         "difficulty_level": lesson_data["difficulty_level"],
-                        "created_at": lesson_data["created_at"]
+                        "created_at": lesson_data["created_at"],
+                        "quality_score": lesson_data.get("metadata", {}).get("evaluation_metrics", {}).get("quality_score", "N/A")
                     })
                 except Exception as e:
                     logger.warning(f"Failed to read lesson file {lesson_file}: {e}")
@@ -126,16 +163,18 @@ class LessonService:
         """Save user feedback for a lesson"""
         try:
             feedback_id = str(uuid.uuid4())
-            feedback_file = Path(settings.LESSONS_DIR) / "feedback" / f"{feedback_id}.json"
-            feedback_file.parent.mkdir(exist_ok=True)
+            feedback_dir = Path(settings.LESSONS_DIR) / "feedback"
+            feedback_dir.mkdir(exist_ok=True)
+            feedback_file = feedback_dir / f"{feedback_id}.json"
             
+            from datetime import datetime
             feedback_data = {
                 "feedback_id": feedback_id,
                 "lesson_id": lesson_id,
                 "rating": rating,
                 "feedback_text": feedback_text,
                 "helpful": helpful,
-                "timestamp": str(Path(feedback_file).stat().st_mtime if feedback_file.exists() else "")
+                "timestamp": datetime.now().isoformat()
             }
             
             with open(feedback_file, "w") as f:

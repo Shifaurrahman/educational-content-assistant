@@ -52,6 +52,15 @@ class LessonGenerateResponse(BaseModel):
     status: str
     message: str
     lesson_plan: Optional[LessonPlan] = None
+    evaluation_metrics: Optional[Dict[str, Any]] = None
+
+class EvaluationMetrics(BaseModel):
+    relevance_score: float = Field(..., ge=0.0, le=1.0, description="How relevant the lesson is to source material (0-1)")
+    citation_accuracy: float = Field(..., ge=0.0, le=1.0, description="How well the lesson cites sources (0-1)")
+    completeness_score: float = Field(..., ge=0.0, le=1.0, description="How complete the lesson structure is (0-1)")
+    quality_score: float = Field(..., ge=0.0, le=1.0, description="Overall quality score (0-1)")
+    agent_efficiency: float = Field(..., ge=0.0, le=1.0, description="How efficiently the agent completed the task (0-1)")
+    quality_rating: str = Field(..., description="Quality rating (Excellent/Very Good/Good/Satisfactory/Needs Improvement)")
 
 class AgentStatus(BaseModel):
     agent_id: str
